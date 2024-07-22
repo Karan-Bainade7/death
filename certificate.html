@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #000;
+        }
+        
+        .title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .details {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .details>div {
+            width: 50%;
+            padding: 10px;
+        }
+        
+        .details label {
+            font-weight: bold;
+        }
+        
+        .details .full-width {
+            width: 100%;
+        }
+        
+        .details input {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .seal {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="title">
+            <h2>मृत्यू प्रमाणपत्र<br> DEATH CERTIFICATE</h2>
+        </div>
+        <div class="details" id="certificate-details">
+            <!-- Certificate details will be inserted here -->
+        </div>
+        <div class="footer">
+            <button id="download-btn">Download PDF</button>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const data = JSON.parse(decodeURIComponent(urlParams.get('data')));
+
+            const detailsContainer = document.getElementById('certificate-details');
+            const fields = [
+                'Local Area', 'Tahsil', 'District', 'Deceased Name', 'Sex',
+                'Date of Death', 'Place of Death', 'Mother Name', 'Father Name',
+                'Address at Death', 'Permanent Address', 'Registration No.',
+                'Date of Registration', 'Date of Issue'
+            ];
+
+            fields.forEach((field, index) => {
+                let div = document.createElement('div');
+                div.innerHTML = `<label>${field}:</label> <input type="text" value="${data[index] || 'N/A'}" readonly>`;
+                detailsContainer.appendChild(div);
+            });
+
+            document.getElementById('download-btn').addEventListener('click', () => {
+                const {
+                    jsPDF
+                } = window.jspdf;
+                const doc = new jsPDF();
+
+                doc.setFontSize(16);
+                doc.text('Death Certificate', 10, 10);
+
+                doc.setFontSize(12);
+                fields.forEach((field, index) => {
+                    doc.text(`${field}: ${data[index] || 'N/A'}`, 10, 20 + (index * 10));
+                });
+
+                doc.save('certificate.pdf');
+            });
+        });
+    </script>
+</body>
+
+</html>
